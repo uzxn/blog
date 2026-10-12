@@ -1,0 +1,3 @@
+mkdocs-material>=9.5
+# 需要自动生成社交分享卡片时，改用：
+# mkdocs-material[imaging]>=9.5
