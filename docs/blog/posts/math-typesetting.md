@@ -2,12 +2,11 @@
 date: 2026-10-11
 slug: math-typesetting
 authors:
-  - yourname
+  - uzxn
 categories:
   - 技术
 tags:
   - LaTeX
-  - KaTeX
   - MkDocs
 ---
 

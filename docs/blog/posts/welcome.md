@@ -2,7 +2,7 @@
 date: 2026-10-11
 slug: welcome
 authors:
-  - yourname
+  - uzxn
 categories:
   - 随笔
 tags:
@@ -10,9 +10,9 @@ tags:
   - 建站
 ---
 
-# 博客开张：为什么用 MkDocs
+# 为什么用 MkDocs
 
-折腾过 Hexo、Hugo，最后又回到了 MkDocs。原因很简单：**内容就是纯 Markdown，配置就是一个 YAML，没有前端构建的负担。**
+原因很简单：**内容就是纯 Markdown，配置就是一个 YAML，没有前端构建的负担。**
 
 ## 这套博客的结构
 
@@ -22,7 +22,7 @@ tags:
 ---
 date: 2026-10-11
 authors:
-  - yourname
+  - uzxn
 categories:
   - 技术
 tags:
@@ -62,5 +62,3 @@ pip install -r requirements.txt
 mkdocs serve          # 打开 http://127.0.0.1:8000
 mkdocs build --strict # 构建到 site/ 目录
 ```
-
-下一篇记录一下公式排版的具体用法。
