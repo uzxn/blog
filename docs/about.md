@@ -1,12 +1,14 @@
 ---
 title: 关于
+hide:
+  - navigation
 ---
 
 # 关于
 
 你好，我是 **uzxn**，这里是我的技术博客。
 
-- 关注方向：后端 / 算法 / 数学
+- 关注方向：后端 / 算法 / 数学 / 一切美好的事物
 - GitHub：<https://github.com/uzxn>
 - 邮箱：<hzx@hrbeu.edu.cn>
 

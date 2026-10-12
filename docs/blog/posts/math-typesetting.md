@@ -3,16 +3,17 @@ date: 2026-10-11
 slug: math-typesetting
 authors:
   - uzxn
-categories:
-  - 技术
 tags:
   - LaTeX
+  - KaTeX
   - MkDocs
 ---
 
 # 数学公式排版速查
 
-本站用 [KaTeX](https://katex.org/) 渲染 LaTeX。写法就是 GitHub 那一套：行内用单美元符 `$ ... $`，行间（块级）用双美元符 `$$ ... $$`。KaTeX 体积小、渲染快，代价是支持的宏比 MathJax 少一些（见文末排错提示）。
+本站用 [KaTeX](https://katex.org/) 渲染 LaTeX。写法就是 GitHub 那一套：行内用单美元符 `$ ... $`，行间（块级）用双美元符 `$$ ... $$`。KaTeX 体积小、渲染快，比 MathJax 更适用于网页排版。
+
+<!-- more -->
 
 ## 行内与块级
 
@@ -50,7 +51,7 @@ $$
 
 $$
 \lim_{n \to \infty} \left(1 + \frac{1}{n}\right)^n = e,
-\qquad
+\quad
 \oint_{\partial \Omega} \mathbf{F} \cdot \mathrm{d}\mathbf{S}
 = \iiint_{\Omega} (\nabla \cdot \mathbf{F})\, \mathrm{d}V
 $$
@@ -112,7 +113,5 @@ $$
     1. 块级公式必须**独占一行**，`$$E=mc^2$$ 后面还有正文` 这种写法会被拆坏；
     2. `$` 和公式之间**不能有空格**，`$ x $` 不会被识别，要写 `$x$`；
     3. 页面上显示的是**红色源码**，说明 KaTeX 不认识这个宏，按提示换成等价的受支持写法。
-- 正文里的**货币符号**不会被误判：花了 $5 和 $10 会原样显示（不会变成公式）。真要单独写一个美元金额时可以用 `\$` 转义，例如 `\$5`。
-- **MathJax 专有宏**（如化学式扩展 `mhchem` 的 `\ce{}`）KaTeX 不支持。这类内容要么改用 `\text{}` 手写，要么单独为页面换回 MathJax。
 - 公式**太长溢出**：本站在 CSS 里给块级公式加了横向滚动，正常不会撑破布局。
 - 公式在**代码块/行内代码**里不会被渲染，写教程示例时直接用反引号包起来即可。

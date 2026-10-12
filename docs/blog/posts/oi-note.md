@@ -3,17 +3,14 @@ date: 2026-10-12
 slug: oi-note
 authors:
   - uzxn
-categories:
-  - 算法竞赛
 tags:
-  - OI
   - C++
   - 算法
 ---
 
 # OI 笔记
 
-<a href="#end">转至文末</a>
+<!-- more -->
 
 ## 滚动锦标赛排序
 

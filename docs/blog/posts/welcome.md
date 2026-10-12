@@ -3,8 +3,6 @@ date: 2026-10-11
 slug: welcome
 authors:
   - uzxn
-categories:
-  - 随笔
 tags:
   - MkDocs
   - 建站
@@ -13,6 +11,8 @@ tags:
 # 为什么用 MkDocs
 
 原因很简单：**内容就是纯 Markdown，配置就是一个 YAML，没有前端构建的负担。**
+
+<!-- more -->
 
 ## 这套博客的结构
 
@@ -23,10 +23,8 @@ tags:
 date: 2026-10-11
 authors:
   - uzxn
-categories:
-  - 技术
 tags:
-  - Python
+  - C++
 ---
 
 # 标题

@@ -17,11 +17,12 @@
     ├── javascripts/katex.js   # KaTeX 渲染桥接
     ├── stylesheets/extra.css  # 中文字体栈、公式溢出处理
     └── blog/
-        ├── index.md
+        ├── index.md           # 博客列表页（「博客」标签页的首页）
         ├── .authors.yml       # 作者信息
         └── posts/             # 文章放这里
             ├── welcome.md
-            └── math-typesetting.md
+            ├── math-typesetting.md
+            └── oi-note.md
 ```
 
 ## 1. 环境要求
@@ -84,8 +85,6 @@ date: 2026-10-11
 slug: my-first-post
 authors:
   - yourname
-categories:
-  - 技术
 tags:
   - Python
 ---
@@ -97,7 +96,8 @@ tags:
 
 - `date` 决定排序，`slug` 决定 URL（不写会用标题自动生成，中文标题会生成中文 URL，建议手写英文 slug）
 - `authors` 里的 `yourname` 要和 `.authors.yml` 里的 key 一致
-- `categories` 和 `tags` 会分别生成分类页和标签索引
+- `tags` 会生成标签索引页（本站已去掉分类功能，不要再写 `categories`）
+- 「归档」页由插件按年份自动生成，挂在「博客」标签页下，不用手动创建
 
 ### 数学公式写法
 
@@ -174,8 +174,6 @@ mkdocs gh-deploy
 | 数学公式 | KaTeX 自带字体 | 由 `katex.min.css` 随 CDN 加载，无需自托管 |
 
 公式用 KaTeX 自己的字体（`KaTeX_Main` / `KaTeX_Math` / `KaTeX_AMS` / `KaTeX_Size1~4` 等），和正文字体互不影响，也不会受 `--md-text-font` 影响。
-
-`docs/stylesheets/fonts/` 里另有一个 `FiraMath-Regular.woff2`，是之前给公式换成 Fira Math 时留下的，**当前未启用**（extra.css 里没有引用它），想改回 Fira Math 公式时可拿来用，不需要就删掉。
 
 两点要知道：
 
