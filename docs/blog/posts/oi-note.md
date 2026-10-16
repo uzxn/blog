@@ -462,27 +462,36 @@ ll qpow(ll a, ll b, ll p) {
 
 ## 树状数组
 
+!!! warning "注意"
+    数组起始下标必须是 1，否则对于下标 0，0 ± lowbit(0) 都是 0，会造成死循环。
+
+    `add()` 函数的循环条件是 `i <= n`，这里 `n` 是序列中数的个数。
+
+    `get()` 函数的循环条件是 `i > 0`，原因见上。
+
 ```cpp
-const ll N = 100005;
-ll tree[N];
-// 1101,0110,0000 => 0000,0010,0000
-ll lowbit(ll x) { return x & (-x); }
-// 求前 k 个元素和
-ll getsum(ll k) {
-  ll s = 0;
-  while (k > 0) {
-    s += tree[k];
-    k -= lowbit(k);
-  }
-  return s;
-}
-// 将第 i 个元素加 x
-void change(ll i, ll x) {
-  while (i <= N) {
-    tree[i] += x;
-    i += lowbit(i);
-  }
-}
+ll lowbit(ll x) { return x & -x; }
+
+struct BIT {
+    ll n, data[500005];
+    BIT(ll param) : n(param) {
+        for (ll i = 0; i <= n; i++) {
+            data[i] = 0;
+        }
+    }
+    void add(ll i, ll x) {
+        for (; i <= n; i += lowbit(i)) {
+            data[i] += x;
+        }
+    }
+    ll get(ll i) {
+        ll sum = 0;
+        for (; i > 0; i -= lowbit(i)) {
+            sum += data[i];
+        }
+        return sum;
+    }
+};
 ```
 
 ## 取整函数
