@@ -12,6 +12,47 @@ tags:
 
 <!-- more -->
 
+## ST 表
+
+`data[k][i]` 表示以 $a_i$ 为左端点、长度为 $2^k$ 的一段区间信息，右端点是 $a_{i+2^k-1}$。其中 $k\ge 0$，$i\ge 1$。
+
+把较小的一维放在前面，遍历时应按 **先第一维，再第二维** 的顺序访问，即：
+
+```cpp
+for (int k = 0; k <= K; k++)
+    for (int i = 1; i + (1 << k) - 1 <= n; i++)
+        ...
+```
+
+这样在 C/C++ 行优先存储下，内层 `i` 连续访问，缓存友好。
+
+第一维大小应为 $\lfloor\log_2 n\rfloor+1$，下标范围是 $0\sim\lfloor\log_2 n\rfloor$。例如序列总长度 $n=10^5$，则第一维大小应为 $\bold{17}$，最大可访问下标是 `data[16][...]`，因为 $2^{16}=65536$ 大于序列总长度的一半，所以查询整个序列时，用两个长度为 $2^{16}$ 的区间即可覆盖整个序列。
+
+```cpp
+constexpr ll N = 1e5 + 5;
+constexpr ll LOGN = 18;
+
+struct ST {
+    ll n;
+    ll st[LOGN][N], lg[N];
+    // 构建 ST 表
+    void build(ll *a, ll param) {
+        n = param;
+        lg[1] = 0;
+        for (ll i = 2; i <= n; i++) lg[i] = lg[i >> 1] + 1;
+        for (ll i = 1; i <= n; i++) st[0][i] = a[i];
+        for (ll k = 1; k <= lg[n]; k++)
+            for (ll i = 1; i + (1 << k) - 1 <= n; i++)
+                st[k][i] = max(st[k - 1][i], st[k - 1][i + (1 << (k - 1))]);
+    }
+    // 查询区间 [l, r] 的最大值
+    ll query(ll l, ll r) const {
+        ll k = lg[r - l + 1];
+        return max(st[k][l], st[k][r - (1 << k) + 1]);
+    }
+};
+```
+
 ## 滚动锦标赛排序
 
 ```cpp
@@ -473,22 +514,18 @@ ll qpow(ll a, ll b, ll p) {
 ll lowbit(ll x) { return x & -x; }
 
 struct BIT {
-    ll n, data[500005];
-    BIT(ll param) : n(param) {
-        for (ll i = 0; i <= n; i++) {
-            data[i] = 0;
-        }
+    ll n;
+    vector<ll> data;
+    BIT(ll param) {
+        n = param;
+        data.resize(n + 1, 0);
     }
     void add(ll i, ll x) {
-        for (; i <= n; i += lowbit(i)) {
-            data[i] += x;
-        }
+        for (; i <= n; i += lowbit(i)) data[i] += x;
     }
     ll get(ll i) {
         ll sum = 0;
-        for (; i > 0; i -= lowbit(i)) {
-            sum += data[i];
-        }
+        for (; i > 0; i -= lowbit(i)) sum += data[i];
         return sum;
     }
 };
