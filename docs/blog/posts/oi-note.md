@@ -475,15 +475,38 @@ ll f(ll x) {
 }
 ```
 
-## 并查集
+## 并查集 (Union-Find)
+
+初始化时把 `fa[i]` 设为 `i`，表示每个元素自身构成单元集合。
+
+`tot` 表示当前的集合个数。每当 `merge()` 两个不同集合的元素时，`tot` 减一。当 `tot` 为 1 时，所有元素连通。
+
+`getf()` 使用路径压缩。
+
+`merge()` 注意先求 `fx` 和 `fy`，再把 `fx` 挂到 `fy` 的名下。
+
+可用于 Kruskal 算法求最小生成树，注意连边时仍然要判断两个节点是否在同一个集合中。
 
 ```cpp
-// 初始化: 将所有节点的根节点设为自身
-void init(void) { for (ll i = 1; i <= n; i++) f[i] = i; }
-// 找根节点 (路径压缩)
-ll getf(ll a) { return f[a] == a ? a : f[a] = getf(f[a]); }
-// 合并
-void merge(ll a, ll b) { f[getf(b)] = getf(a); }
+struct UF {
+    ll n, tot;
+    vector<ll> fa;
+    UF(ll param) {
+        n = tot = param;
+        fa.resize(n + 1);
+        for (ll i = 1; i <= n; i++) fa[i] = i;
+    }
+    ll getf(ll x) {
+        if (fa[x] == x) return x;
+        return fa[x] = getf(fa[x]);
+    }
+    void merge(ll x, ll y) {
+        ll fx = getf(x), fy = getf(y);
+        if (fx == fy) return;
+        fa[fx] = fy;
+        tot--;
+    }
+};
 ```
 
 ## 快速幂
@@ -503,12 +526,11 @@ ll qpow(ll a, ll b, ll p) {
 
 ## 树状数组
 
-!!! warning "注意"
-    数组起始下标必须是 1，否则对于下标 0，0 ± lowbit(0) 都是 0，会造成死循环。
+数组起始下标必须是 1，否则对于下标 0，0 ± lowbit(0) 都是 0，会造成死循环。
 
-    `add()` 函数的循环条件是 `i <= n`，这里 `n` 是序列中数的个数。
+`add()` 的循环条件是 `i <= n`，这里 `n` 是序列中数的个数。
 
-    `get()` 函数的循环条件是 `i > 0`，原因见上。
+`get()` 的循环条件是 `i > 0`，原因见上。
 
 ```cpp
 ll lowbit(ll x) { return x & -x; }
