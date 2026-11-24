@@ -35,6 +35,7 @@ constexpr ll LOGN = 18;
 struct ST {
     ll n;
     ll st[LOGN][N], lg[N];
+
     // 构建 ST 表
     void build(ll *a, ll param) {
         n = param;
@@ -45,6 +46,7 @@ struct ST {
             for (ll i = 1; i + (1 << k) - 1 <= n; i++)
                 st[k][i] = max(st[k - 1][i], st[k - 1][i + (1 << (k - 1))]);
     }
+
     // 查询区间 [l, r] 的最大值
     ll query(ll l, ll r) const {
         ll k = lg[r - l + 1];
@@ -53,38 +55,146 @@ struct ST {
 };
 ```
 
+## 归并排序
+
+`begin >= end` 表示空区间（无效区间）。
+
+注意 `while` 的条件是 `&&`。
+
+空间复杂度 $O(n)$。
+
+```cpp
+void merge_sort(ll* a, ll begin, ll end) {
+    if (begin >= end) return;
+
+    ll mid = begin + (end - begin) / 2;
+
+    merge_sort(a, begin, mid);
+    merge_sort(a, mid + 1, end);
+
+    ll i = begin;
+    ll left = begin, right = mid + 1;
+
+    while (left <= mid && right <= end) {
+        if (a[left] <= a[right]) {
+            helper[i++] = a[left++];
+        } else {
+            helper[i++] = a[right++];
+        }
+    }
+
+    while (left <= mid) helper[i++] = a[left++];
+    while (right <= end) helper[i++] = a[right++];
+
+    memcpy(a + begin, helper + begin, sizeof(ll) * (end - begin + 1));
+}
+```
+
+## 快速排序
+
+`begin >= end` 表示空区间（无效区间）。
+
+随机选择基准元素 `pivot`，通过一次遍历将原数组分为三个区：**小于** `pivot` 的，**等于** `pivot` 的，**大于** `pivot` 的，然后在小于和大于的区间内递归执行。
+
+此处采用非常规写法。在遍历过程中，`[begin, p1]` 表示 **小于** `pivot` 的区间，`[p1 + 1, p2]` 表示 **等于** `pivot` 的区间，`[p2 + 1, i - 1]` 表示 **大于** `pivot` 的区间。
+
+初始时三个区间都为空，应将 `p1`、`p2` 均设为 `begin - 1`。
+
+空间复杂度 $O(1)$。
+
+```cpp
+void quick_sort(ll* a, ll begin, ll end) {
+    if (begin >= end) return;
+
+    ll pivot = a[range_rand(begin, end)];
+    ll p1 = begin - 1, p2 = begin - 1;
+
+    for (ll i = begin; i <= end; i++) {
+        if (a[i] < pivot) {
+            swap(a + i, a + p2 + 1);
+            swap(a + p2 + 1, a + p1 + 1);
+            p1++, p2++;
+        } else if (a[i] == pivot) {
+            swap(a + i, a + p2 + 1);
+            p2++;
+        }
+    }
+
+    quick_sort(a, begin, p1);
+    quick_sort(a, p2 + 1, end);
+}
+```
+
+## 基数排序
+
+低位优先（LSD），先按照低 16 位排序，再按照高 16 位排序。
+
+取低 16 位：`x & 0xffffll`；取高 16 位：`x >> 16 & 0xffffll`。
+
+**涉及移位操作的整数字面量建议带上 `ll` 或 `ull` 后缀。**
+
+内部排序采用计数排序，用 `cnt` 数组记录出现的次数，累加前缀和。写入时从后往前，次数前缀和先自减，然后作为写入的数组下标。
+
+只能用于非负整数的排序，且元素的最大值不超过 $2^{32}-1$。
+
+空间复杂度 $O(n+V)$，$V$ 为 16 位的值域大小。
+
+```cpp
+void radix_sort(ll* a, ll begin, ll end) {
+    for (ll i = begin; i <= end; i++) cnt[a[i] & 0xffffll]++;
+    for (ll i = 1; i <= 0xffffll; i++) cnt[i] += cnt[i - 1];
+
+    // 低 16 位排序的结果写入 b 数组
+    for (ll i = end; i >= begin; i--) {
+        cnt[a[i] & 0xffffll]--;
+        b[begin + cnt[a[i] & 0xffffll]] = a[i];
+    }
+
+    memset(cnt, 0, sizeof(cnt));
+
+    for (ll i = begin; i <= end; i++) cnt[b[i] >> 16 & 0xffffll]++;
+    for (ll i = 1; i <= 0xffffll; i++) cnt[i] += cnt[i - 1];
+
+    // b 数组按高 16 位排序后再写入原数组
+    for (ll i = end; i >= begin; i--) {
+        cnt[b[i] >> 16 & 0xffffll]--;
+        a[begin + cnt[b[i] >> 16 & 0xffffll]] = b[i];
+    }
+}
+```
+
 ## 滚动锦标赛排序
 
 ```cpp
 int winner(int a, int b, vector<int>& nums) {
-  if (a == -1) return b;
-  if (b == -1) return a;
-  if (nums[a] < nums[b]) return a;
-  return b;
+    if (a == -1) return b;
+    if (b == -1) return a;
+    if (nums[a] < nums[b]) return a;
+    return b;
 }
 
 void sort(vector<int>& nums) {
-  vector<int> tree, ans;
-  tree.reserve(nums.size() * 2 - 1);
-  ans.reserve(nums.size());
+    vector<int> tree, ans;
+    tree.reserve(nums.size() * 2 - 1);
+    ans.reserve(nums.size());
 
-  for (size_t i = 0; i < nums.size(); i++) tree.push_back(i);
+    for (size_t i = 0; i < nums.size(); i++) tree.push_back(i);
 
-  for (size_t i = 0; i < tree.size() - 1; i += 2)
-    tree.push_back(winner(tree[i], tree[i + 1], nums));
+    for (size_t i = 0; i < tree.size() - 1; i += 2)
+        tree.push_back(winner(tree[i], tree[i + 1], nums));
 
-  for (size_t i = 0; i < nums.size(); i++) {
-    size_t root = tree.back();
-    ans.push_back(nums[root]);
-    tree[root] = -1;
-    while (root < tree.size() - 1) {
-      size_t parent = root / 2 + nums.size();
-      tree[parent] = winner(tree[root], tree[root ^ 1], nums);
-      root = parent;
+    for (size_t i = 0; i < nums.size(); i++) {
+        size_t root = tree.back();
+        ans.push_back(nums[root]);
+        tree[root] = -1;
+        while (root < tree.size() - 1) {
+            size_t parent = root / 2 + nums.size();
+            tree[parent] = winner(tree[root], tree[root ^ 1], nums);
+            root = parent;
+        }
     }
-  }
 
-  nums.assign(ans.begin(), ans.end());
+    nums.assign(ans.begin(), ans.end());
 }
 ```
 
@@ -143,7 +253,7 @@ void print(mat a) {
 
 ## 二分
 
-![image](https://img2024.cnblogs.com/blog/1965104/202608/1965104-20260810193913659-1012950662.png)
+![image](./binary_search.png)
 
 ## Miller-Rabin 素性测试
 
@@ -176,10 +286,8 @@ bool is_prime(ll n) {
 
 [P11276 第一首歌](https://www.luogu.com.cn/problem/P11276)
 
-| Base  |   Mod    |
-| :---: | :------: |
-| $137$ | $10^9+7$ |
-| $139$ | $10^9+9$ |
+- 第一组：Base $137$，Mod $10^9+7$
+- 第二组：Base $139$，Mod $10^9+9$
 
 ```cpp
 struct Hash {
@@ -205,12 +313,12 @@ struct Hash {
 
 ```cpp
 for (int i = 1; i <= 1000; i++) {
-  mid = (l + r) / 2.0;
-  check(mid) ? l = mid : r = mid;
+    mid = (l + r) / 2.0;
+    check(mid) ? l = mid : r = mid;
 }
 ```
 
-手动设置二分次数，不会出现死循环，最终答案区间长度缩小到原来的 $\frac{1}{2^{1000}}$。
+手动设定二分次数，不会出现死循环，最终答案区间长度缩小到原来的 $\frac{1}{2^{1000}}$。
 
 ## 生成随机数
 
@@ -219,9 +327,10 @@ for (int i = 1; i <= 1000; i++) {
 ```cpp
 random_device rd;
 mt19937 gen(rd());
-ll random(ll n, ll m) { // [n, m]
-  uniform_int_distribution<ll> dist(n, m);
-  return dist(gen);
+
+ll range_random(ll n, ll m) { // 闭区间 [n, m]
+    uniform_int_distribution<ll> dist(n, m);
+    return dist(gen);
 }
 ```
 
@@ -475,7 +584,7 @@ ll f(ll x) {
 }
 ```
 
-## 并查集 (Union-Find)
+## 并查集
 
 初始化时把 `fa[i]` 设为 `i`，表示每个元素自身构成单元集合。
 
@@ -488,18 +597,21 @@ ll f(ll x) {
 可用于 Kruskal 算法求最小生成树，注意连边时仍然要判断两个节点是否在同一个集合中。
 
 ```cpp
-struct UF {
+struct DSU {
     ll n, tot;
     vector<ll> fa;
-    UF(ll param) {
+
+    DSU(ll param) {
         n = tot = param;
         fa.resize(n + 1);
         for (ll i = 1; i <= n; i++) fa[i] = i;
     }
+
     ll getf(ll x) {
         if (fa[x] == x) return x;
         return fa[x] = getf(fa[x]);
     }
+    
     void merge(ll x, ll y) {
         ll fx = getf(x), fy = getf(y);
         if (fx == fy) return;
